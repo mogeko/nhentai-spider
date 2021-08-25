@@ -1,4 +1,5 @@
 aiohttp
 asyncio
 BeautifulSoup4
+fake-useragent
 lxml

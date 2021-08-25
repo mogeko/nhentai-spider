@@ -2,6 +2,7 @@ from asyncio.tasks import Task
 from contextlib import asynccontextmanager
 from random import uniform
 from typing import Callable, Iterable
+from fake_useragent import UserAgent
 import aiohttp
 import asyncio
 import logging
@@ -11,7 +12,7 @@ loger = logging.getLogger(__name__)
 class Spider:
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0'
+        'User-Agent': UserAgent().random
     }
 
     def __init__(self) -> None:
