@@ -39,17 +39,25 @@ class Spider:
 
     async def sleep(self, min_delay:float = 1, max_delay: float = 5) -> None:
         '''Coroutine that completes after a random time (in seconds).
-        
-        Use min_delay and max_delay to specify the range of random time.
-        '''
-        delay = round(uniform(min_delay, max_delay), 3)
-        loger.info('the spider will sleep for %s seconds', delay)
-        await asyncio.sleep(delay)
 
-    async def fetch(self, url: str) -> str:
-        '''Get HTML from the specified url.'''
+        Use min_delay and max_delay to specify the range of random time.
+
+        set max_delay=0 to close it.
+        '''
+        if max_delay:
+            delay = round(uniform(min_delay, max_delay), 3)
+            loger.info('the spider will sleep for %s seconds', delay)
+            await asyncio.sleep(delay)
+
+    async def fetch(self, url: str, *, min_delay: float = 1, max_delay: float = 5) -> str:
+        '''Get HTML from the specified url.
+
+        use min_delay and max_delay to set a random sleep time(default between 1s and 5s).
+
+        set max_delay=0 to pass the sleep time.
+        '''
         loger.info('get HTML from %s', url)
-        await self.sleep() # sleep a random time (between 1s and 5s)
+        await self.sleep(min_delay, max_delay) # sleep a random time (default between 1s and 5s)
         async with self.session.get(url, headers=self.headers) as response:
             return await response.text()
 
