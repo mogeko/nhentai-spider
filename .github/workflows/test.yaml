@@ -29,7 +29,11 @@ jobs:
         pip install -e .
     - name: Test with pytest
       run: |
-        make test
+        make testv
     - name: Test code coverage with pytest-cov
       run: |
-        make cov
+        make cov-xml
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: true

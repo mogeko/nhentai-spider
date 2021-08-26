@@ -8,17 +8,20 @@ init:
 	pip install -r requirements.txt
 	pip install -e .
 
-test:
+test: ${TEST_DIR} ${PROJ_NAME}
 	${TEST_CMD} ${TEST_DIR}
 
-testv:
+testv: ${TEST_DIR} ${PROJ_NAME}
 	${TEST_CMD} -vv ${TEST_DIR}
 
-cov:
+cov: ${TEST_DIR} ${PROJ_NAME}
 	${TEST_CMD} --cov=${PROJ_NAME} ${TEST_DIR}
 
-run:
+cov-xml: ${TEST_DIR} ${PROJ_NAME}
+	${TEST_CMD} --cov-report xml --cov=${PROJ_NAME} ${TEST_DIR}
+
+run: ${PROJ_NAME}
 	${PY_CMD} -m ${PROJ_NAME}
 
-build:
+build: ${SETUP}
 	${PY_CMD} ${SETUP} sdist
