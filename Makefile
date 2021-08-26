@@ -1,3 +1,5 @@
+.PHONY: clean-pyc clean-build clean-cov clean
+
 TEST_CMD  = py.test
 PY_CMD    = python
 PROJ_NAME = nhentai_spider
@@ -25,3 +27,20 @@ run: ${PROJ_NAME}
 
 build: ${SETUP}
 	${PY_CMD} ${SETUP} sdist
+
+clean-pyc:
+	@find . -name '*.pyc' -delete
+	@find . -name '__pycache__' -type d | xargs rm -fr
+	@find . -name '.pytest_cache' -type d | xargs rm -fr
+
+clean-build:
+	@rm --force --recursive build/
+	@rm --force --recursive dist/
+	@rm --force --recursive *.egg-info
+
+clean-cov:
+	@rm --force --recursive .coverage
+	@rm --force --recursive coverage.xml
+
+clean: clean-pyc clean-build clean-cov
+	@echo "## Clean all data."
