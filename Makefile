@@ -1,5 +1,5 @@
-TEST_CMD  = /home/vscode/.local/bin/pytest
-PY_CMD    = /usr/local/bin/python
+TEST_CMD  = py.test
+PY_CMD    = python
 PROJ_NAME = nhentai_spider
 TEST_DIR  = tests/
 

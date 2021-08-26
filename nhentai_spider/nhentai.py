@@ -1,4 +1,4 @@
-from typing import Callable, Iterable
+from typing import Iterable
 from bs4 import BeautifulSoup
 import logging
 
