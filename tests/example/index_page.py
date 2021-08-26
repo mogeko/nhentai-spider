@@ -1,0 +1,6 @@
+index = {
+    'domain': 'nhentai.net',
+    'index': 'https://nhentai.net',
+    'popular': ['https://nhentai.net/g/370542/', 'https://nhentai.net/g/370539/', 'https://nhentai.net/g/370552/', 'https://nhentai.net/g/370560/', 'https://nhentai.net/g/370412/'],
+    'new': ['https://nhentai.net/g/370609/', 'https://nhentai.net/g/370608/', 'https://nhentai.net/g/370607/', 'https://nhentai.net/g/370606/', 'https://nhentai.net/g/370605/', 'https://nhentai.net/g/370604/', 'https://nhentai.net/g/370603/', 'https://nhentai.net/g/370602/', 'https://nhentai.net/g/370601/', 'https://nhentai.net/g/370600/', 'https://nhentai.net/g/370599/', 'https://nhentai.net/g/370598/', 'https://nhentai.net/g/370597/', 'https://nhentai.net/g/370596/', 'https://nhentai.net/g/370595/', 'https://nhentai.net/g/370594/', 'https://nhentai.net/g/370593/', 'https://nhentai.net/g/370592/', 'https://nhentai.net/g/370591/', 'https://nhentai.net/g/370590/', 'https://nhentai.net/g/370589/', 'https://nhentai.net/g/370588/', 'https://nhentai.net/g/370587/', 'https://nhentai.net/g/370586/', 'https://nhentai.net/g/370585/']
+}

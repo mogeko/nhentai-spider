@@ -1,4 +1,7 @@
 aiohttp
 asyncio
 BeautifulSoup4
+fake-useragent
 lxml
+pytest
+pytest-cov
