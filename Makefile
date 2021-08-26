@@ -6,6 +6,7 @@ SETUP     = setup.py
 
 init:
 	pip install -r requirements.txt
+	pip install -e .
 
 test:
 	${TEST_CMD} ${TEST_DIR}
