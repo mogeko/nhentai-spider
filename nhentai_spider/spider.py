@@ -1,11 +1,14 @@
 from asyncio.tasks import Task
 from contextlib import asynccontextmanager
 from random import uniform
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Tuple, TypeVar
 from fake_useragent import UserAgent
 import aiohttp
 import asyncio
 import logging
+
+T = TypeVar('T')
+S = TypeVar('S')
 
 loger = logging.getLogger(__name__)
 
@@ -19,7 +22,7 @@ class Spider:
         """Create a Spider."""
         loger.info('the spider is created')
         self.session = aiohttp.ClientSession()
-        self.tasks   = []
+        self.tasks: list[Task[S]] = []
 
     @asynccontextmanager
     async def creat(self):
@@ -61,12 +64,12 @@ class Spider:
         async with self.session.get(url, headers=self.headers) as response:
             return await response.text()
 
-    async def join(self):
+    async def join(self) -> Tuple[S]:
         """Return the future aggregating results from task list."""
         loger.debug('the spider started working')
         return await asyncio.gather(*self.tasks)
 
-    def create_task(self, job) -> Task:
+    def create_task(self, job: S) -> Task[S]:
         """Schedule the execution of a coroutine object in a spawn task.
 
         Return a Task object.
@@ -74,21 +77,27 @@ class Spider:
         loger.debug('creat and return a task')
         return asyncio.create_task(job)
 
-    def extend_task(self, tasks: Iterable):
+    def extend_task(self, tasks: Iterable[Task[S]]):
         """Extend task list by appending elements from the iterable."""
         loger.debug('extend the task list')
         self.tasks.extend(tasks)
         return self
 
-    def map_jobs(self, func: Callable, jobs: Iterable):
+    def clean_task(self):
+        """Clean up task list"""
+        self.tasks.clear()
+        return self
+
+    def map_jobs(self, func: Callable[[T], S], iters: Iterable[T]):
         """Make an iterator that computes the function using arguments
         from each of the iterables. Then put the iterables into task list.
         """
         loger.debug('put some processed jobs into the task list')
-        self.extend_task(map(func, jobs))
+        bind = lambda iter: self.create_task(func(iter))
+        self.extend_task(map(bind, iters))
         return self
 
-    def do(self, job):
+    def do(self, job: Callable[[T], S]):
         """Extend list by appending elements from the iterable."""
         loger.debug('add a job into the task list')
         self.tasks.append(self.create_task(job))

@@ -3,3 +3,6 @@ init:
 
 test:
 	pytest
+
+run:
+	python -m nhentai_spider
