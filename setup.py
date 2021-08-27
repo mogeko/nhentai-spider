@@ -11,6 +11,7 @@ setup(
 
     install_requires=[
         'aiohttp>=3.7.4.post0',
+        'aiofiles>=0.7.0',
         'asyncio>=3.4.3',
         'beautifulsoup4>=4.9.3',
         'fake-useragent>=0.1.11',

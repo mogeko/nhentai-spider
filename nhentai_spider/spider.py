@@ -1,7 +1,8 @@
 from asyncio.tasks import Task
 from contextlib import asynccontextmanager
 from random import uniform
-from typing import Callable, Iterable, Tuple, TypeVar
+from typing import Awaitable, Callable, Iterable, Tuple, TypeVar, Union
+from aiohttp.client_reqrep import ClientRequest
 from fake_useragent import UserAgent
 import aiohttp
 import asyncio
@@ -9,6 +10,7 @@ import logging
 
 T = TypeVar('T')
 S = TypeVar('S')
+U = TypeVar('U')
 
 loger = logging.getLogger(__name__)
 
@@ -52,17 +54,18 @@ class Spider:
             loger.info('the spider will sleep for %s seconds', delay)
             await asyncio.sleep(delay)
 
-    async def fetch(self, url: str, *, min_delay: float = 1, max_delay: float = 5) -> str:
-        """Get HTML from the specified url.
+    async def fetch(self, url: str, *, min_delay: float = 1, max_delay: float = 5) -> bytes:
+        """Get Bytes data from the specified url.
 
         use min_delay and max_delay to set a random sleep time(default between 1s and 5s).
 
         set max_delay=0 to pass the sleep time.
         """
-        loger.info('get HTML from %s', url)
+        loger.info('get Data from %s', url)
         await self.sleep(min_delay, max_delay) # sleep a random time (default between 1s and 5s)
         async with self.session.get(url, headers=self.headers) as response:
-            return await response.text()
+            if response.status == 200:
+                return await response.read()
 
     async def join(self) -> Tuple[S]:
         """Return the future aggregating results from task list."""

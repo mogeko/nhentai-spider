@@ -20,7 +20,7 @@ async def setup_spider():
 async def test_fetch(spider: Spider):
     url  = 'https://nhentai.net'
     html = await spider.fetch(url, max_delay=0)
-    assert re.findall(r'nhentai.net', html)
+    assert re.findall(r'nhentai.net', html.decode())
 
 @pytest.mark.asyncio
 async def test_sleep_default(spider: Spider):

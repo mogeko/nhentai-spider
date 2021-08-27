@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Union
 from bs4 import BeautifulSoup
 import logging
 
@@ -64,8 +64,30 @@ class MetaPage:
 
         for url in self.downloads:
             loger.debug('[dl] get download url: %s', url)
-        
+
         return self
+
+    def get_downloads(self) -> list[str]:
+        return self.downloads
+
+    def export(self) -> dict[str, Union[list[str], str, int]]:
+        return {
+            'h1title': self.h1title,
+            'h2title': self.h2title,
+            'h1title_full': self.h1title_full,
+            'h2title_full': self.h2title_full,
+            'gallery_id': self.gallery_id,
+            'parodies': self.parodies,
+            'characters': self.characters,
+            'tags': self.tags,
+            'artists': self.artists,
+            'groups': self.groups,
+            'languages': self.languages,
+            'categories': self.categories,
+            'pages': self.pages,
+            'up_time': self.up_time,
+            'downloads': self.downloads
+        }
 
 class IndexPage:
 
