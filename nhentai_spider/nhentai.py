@@ -64,8 +64,11 @@ class MetaPage:
 
         for url in self.downloads:
             loger.debug('[dl] get download url: %s', url)
-        
+
         return self
+
+    def get_downloads(self) -> list[str]:
+        return self.downloads
 
     def export(self) -> dict[str, Union[list[str], str, int]]:
         return {

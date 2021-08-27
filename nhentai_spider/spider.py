@@ -61,7 +61,7 @@ class Spider:
 
         set max_delay=0 to pass the sleep time.
         """
-        loger.info('get HTML from %s', url)
+        loger.info('get Data from %s', url)
         await self.sleep(min_delay, max_delay) # sleep a random time (default between 1s and 5s)
         async with self.session.get(url, headers=self.headers) as response:
             if response.status == 200:
