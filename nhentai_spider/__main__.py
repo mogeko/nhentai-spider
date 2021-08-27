@@ -13,14 +13,17 @@ async def main():
             gallery = await spider.fetch(f'{site.get_url()}1')
             return site.handle_meta_page(meta.decode()).handle_gallery_page(gallery.decode())
 
-        async def download_imgs(site: MetaPage):
-            downloader = FileDownloader(site.export())
-            await downloader.save_meta()
-            return [
-                spider.create_task(
-                    downloader.save_imgs(await spider.fetch(url, min_delay=0.1, max_delay=0.5), index)
-                ) for index, url in enumerate(site.get_downloads(), start=1)
-            ]
+        # Donwload images
+        # In order to run CI faster, only save meta.json rather than download images.
+        #
+        # async def download_imgs(site: MetaPage):
+        #     downloader = FileDownloader(site.export())
+        #     await downloader.save_meta()
+        #     return [
+        #         spider.create_task(
+        #             downloader.save_imgs(await spider.fetch(url, min_delay=0.1, max_delay=0.5), index)
+        #         ) for index, url in enumerate(site.get_downloads(), start=1)
+        #     ]
 
         nhentai = IndexPage()
         index_html = await spider.do(spider.fetch(nhentai.index)).join()
@@ -28,8 +31,9 @@ async def main():
             handle_meta_and_gallery_page,
             nhentai.handle_index(index_html[0]).pop_page()
         ).join()
-        await spider.clean_task().extend_task(
-            reduce(lambda x, y: x.extend(y), [await download_imgs(site) for site in pop_sites])
+        await spider.clean_task().map_jobs(
+            lambda site: FileDownloader(site.export()).save_meta(),
+            pop_sites
         ).join()
 
 asyncio.run(main())
