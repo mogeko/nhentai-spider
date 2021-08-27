@@ -45,6 +45,7 @@ clean-pyc:
 	@find . -name '.pytest_cache' -type d | xargs rm -fr
 
 clean-build:
+	@rm --force --recursive nhentai
 	@rm --force --recursive build/
 	@rm --force --recursive dist/
 	@rm --force --recursive *.egg-info

@@ -1,6 +1,5 @@
 from typing import Union
 import aiofiles
-import asyncio
 import logging
 import json
 import os
