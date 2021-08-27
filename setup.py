@@ -10,15 +10,16 @@ setup(
     packages=find_packages(),
 
     install_requires=[
-        'aiohttp',
-        'asyncio',
-        'BeautifulSoup4',
-        'fake-useragent',
-        'lxml'
+        'aiohttp>=3.7.4.post0',
+        'asyncio>=3.4.3',
+        'beautifulsoup4>=4.9.3',
+        'fake-useragent>=0.1.11',
+        'lxml>=4.6.3'
     ],
     tests_require=[
         'pytest>=6.2.4',
         'pytest-cov>=2.12.1',
+        'pytest_asyncio>=0.15.1'
     ],
 
     classifiers = [
