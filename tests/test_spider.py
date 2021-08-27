@@ -30,5 +30,15 @@ async def test_sleep_default(spider: Spider):
 async def test_pass_sleep(spider: Spider):
     await spider.sleep(max_delay=0)
 
+@pytest.mark.asyncio
+async def test_create_task(spider: Spider):
+    await spider.create_task(spider.sleep(max_delay=0))
+    for task in spider.tasks:
+        assert task
+
+@pytest.mark.asyncio
+async def test_do_join(spider: Spider):
+    await spider.do(spider.sleep(max_delay=0)).join()
+
 if __name__ == '__main__':
     pytest.main()
