@@ -30,7 +30,3 @@ jobs:
     - name: Build & Run
       run: |
         make run
-    - uses: actions/upload-artifact@v2
-      with:
-        name: data
-        path: nhentai/*
