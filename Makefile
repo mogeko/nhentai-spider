@@ -6,6 +6,17 @@ PROJ_NAME = nhentai_spider
 TEST_DIR  = tests/
 SETUP     = setup.py
 
+help:
+	@echo "Usage: make [options] [target] ..."
+	@echo "Target:"
+	@echo "   init         nitialize the development environment."
+	@echo "   test         Run the test file (by pytest)."
+	@echo "   testv        Run the test file with verbose mode (by pytest)."
+	@echo "   cov          Calculate code coverage (by pytest-cov)."
+	@echo "   run          Run nhentai_spdier."
+	@echo "   build        Package nhentai_spdier."
+	@echo "   clean        Clean up this project folder."
+
 init:
 	pip install -r requirements.txt
 	pip install -e .
