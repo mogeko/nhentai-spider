@@ -1,4 +1,4 @@
-from nhentai_spider.nhentai import MetaPage, IndexPage, _IndexPage__PopAndNew
+from nhentai_spider.nhentai import MetaPage, IndexPage, _IndexPage__Language, _IndexPage__PopAndNew
 from example.index_page import index
 from example.meta_page import meta
 import logging
@@ -20,6 +20,9 @@ def setup_index_page():
 def test_get_url_in_index_page(index_page: IndexPage):
     assert index_page.get_url()  == index['index']
 
+def test_set_language(index_page: IndexPage):
+    assert type(index_page.set_language('chinese')) == _IndexPage__Language
+
 def test_handle_index(index_page: IndexPage):
     with open('./tests/example/index_page.html', 'r') as html_file:
         site = index_page.handle_index(html_file.read())
@@ -29,28 +32,22 @@ def test_handle_index(index_page: IndexPage):
 # Test _IndexPage__PopAndNew
 #
 @pytest.fixture(name='pop_and_new')
-def setup_index_with_pop_and_new_page():
+def setup_index_page_with_pop_and_new():
     loger.info('atart the IndexPage with pop&new page')
     yield _IndexPage__PopAndNew(index['popular'], index['new'])
     loger.info('teardown the IndexPage with pop&new page')
 
-def test_pop_site(index_page: _IndexPage__PopAndNew):
-    with open('./tests/example/index_page.html', 'r') as html_file:
-        site1 = index_page.handle_index(html_file.read()).pop_page()
-        site2 = map(MetaPage, index['popular'])
-    for site in zip(site1, site2):
-        assert type(site[0]) == MetaPage
-        assert type(site[1]) == MetaPage
-        assert site[0].url   == site[1].url
+def test_pop_site(pop_and_new: _IndexPage__PopAndNew):
+    sites = pop_and_new.pop_page()
+    for site, url in zip(sites, index['popular']):
+        assert type(site) == MetaPage
+        assert site.get_url() == url
 
-def test_new_site(index_page: _IndexPage__PopAndNew):
-    with open('./tests/example/index_page.html', 'r') as html_file:
-        site1 = index_page.handle_index(html_file.read()).new_page()
-        site2 = map(MetaPage, index['new'])
-    for site in zip(site1, site2):
-        assert type(site[0]) == MetaPage
-        assert type(site[1]) == MetaPage
-        assert site[0].url   == site[1].url
+def test_new_site(pop_and_new: _IndexPage__PopAndNew):
+    sites = pop_and_new.new_page()
+    for site, url in zip(sites, index['new']):
+        assert type(site) == MetaPage
+        assert site.get_url() == url
 
 #
 # Test MetaPage
@@ -88,6 +85,22 @@ def test_handle_gallery_page(meta_page: MetaPage):
 
 def test_get_url(meta_page: MetaPage):
     assert meta_page.get_url() == 'only for test'
+
+
+#
+# Test _IndexPage__Language
+#
+@pytest.fixture(name='language')
+def setup_index_page_with_language():
+    loger.info('start the MetaPage')
+    yield _IndexPage__Language('nhentai.net', 'chinese')
+    loger.info('teardown the MetaPage')
+
+def test_get_url_in_IndexPage__Language(language: _IndexPage__Language):
+    language.get_url()        == 'https://nhentai.net/language/chinese/'
+    language.get_url(sort='today') == 'https://nhentai.net/language/chinese/popular-today'
+    language.get_url(sort='week')  == 'https://nhentai.net/language/chinese/popular-week'
+    language.get_url(sort='all')   == 'https://nhentai.net/language/chinese/popular'
 
 
 if __name__ == '__main__':
