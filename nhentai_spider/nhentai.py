@@ -10,12 +10,12 @@ class IndexPage:
         self.__domain = domain
 
     def set_language(self, lang: str):
-        return _IndexPage__Language(self.__domain, lang)
+        return IndexPageLanguage(self.__domain, lang)
 
     def get_url(self):
         return f'https://{self.__domain}'
 
-    def __get_gallery_url(self, soup: BeautifulSoup) -> str:
+    def get_gallery_url(self, soup: BeautifulSoup) -> list[str]:
         galleries = soup.find_all(class_='gallery')
         return [self.get_url() + gallery.find('a').get('href') for gallery in galleries]
 
@@ -24,13 +24,13 @@ class IndexPage:
         loger.info('start handle the index page.')
         soup = BeautifulSoup(html, 'lxml').find_all(class_='index-container')
 
-        popular = self.__get_gallery_url(soup[0])
-        new     = self.__get_gallery_url(soup[1])
+        popular = self.get_gallery_url(soup[0])
+        new     = self.get_gallery_url(soup[1])
 
         loger.debug('[index] popular: %s', popular)
         loger.debug('[index] new: %s', new)
 
-        return _IndexPage__PopAndNew(popular, new)
+        return IndexPagePopAndNew(popular, new)
 
 
 class MetaPage:
@@ -119,7 +119,7 @@ class MetaPage:
         }
 
 
-class _IndexPage__PopAndNew(IndexPage):
+class IndexPagePopAndNew(IndexPage):
 
     def __init__(self, popular: str, new: str):
         self.__popular = popular
@@ -136,7 +136,7 @@ class _IndexPage__PopAndNew(IndexPage):
         return map(MetaPage, self.__new)
 
 
-class _IndexPage__Language(IndexPage):
+class IndexPageLanguage(IndexPage):
 
     def __init__(self, domain: str, lang: str) -> None:
         self.__domain = domain
@@ -152,3 +152,12 @@ class _IndexPage__Language(IndexPage):
         else:
             sort = ''
         return f'https://{self.__domain}/language/{self.__lang}/{sort}'
+
+    def handle_index(self, html: str):
+
+        loger.info('start handle the index (with language) page.')
+        sites = self.get_gallery_url(BeautifulSoup(html, 'lxml'))
+
+        loger.debug('[index] sites: %s', sites)
+
+        return map(MetaPage, sites)
