@@ -26,7 +26,7 @@ async def main():
         #     ]
 
         nhentai = IndexPage()
-        index_html = await spider.do(spider.fetch(nhentai.index)).join()
+        index_html = await spider.do(spider.fetch(nhentai.get_url())).join()
         pop_sites: Tuple[MetaPage] = await spider.clean_task().map_jobs(
             handle_meta_and_gallery_page,
             nhentai.handle_index(index_html[0]).pop_page()
