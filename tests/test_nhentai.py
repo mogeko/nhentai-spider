@@ -1,4 +1,4 @@
-from nhentai_spider.nhentai import MetaPage, IndexPage
+from nhentai_spider.nhentai import MetaPage, IndexPage, _IndexPage__PopAndNew
 from example.index_page import index
 from example.meta_page import meta
 import logging
@@ -8,53 +8,63 @@ logging.basicConfig(level=logging.DEBUG)
 
 loger = logging.getLogger(__name__)
 
-@pytest.fixture(scope='function', name='index_page')
-def setup_index_page(request):
-    def teardown_index_page():
-        loger.info('teardown the IndexPage')
-    request.addfinalizer(teardown_index_page)
+#
+# Test IndexPage
+#
+@pytest.fixture(name='index_page')
+def setup_index_page():
     loger.info('start the IndexPage')
-    return IndexPage()
+    yield IndexPage()
+    loger.info('teardown the IndexPage')
 
-@pytest.fixture(scope='function', name='meta_page')
-def setup_meta_page(request):
-    def teardown_meta_page():
-        loger.info('teardown the MetaPage')
-    request.addfinalizer(teardown_meta_page)
-    loger.info('start the MetaPage')
-    return MetaPage('only for test', pages=33)
-
-def test_index_page_default(index_page: IndexPage):
-    assert index_page.domain == index['domain']
-    assert index_page.index  == index['index']
+def test_get_url_in_index_page(index_page: IndexPage):
+    assert index_page.get_url()  == index['index']
 
 def test_handle_index(index_page: IndexPage):
     with open('./tests/example/index_page.html', 'r') as html_file:
         site = index_page.handle_index(html_file.read())
-        assert index_page == site
-    assert index_page.popular == index['popular']
-    assert index_page.new     == index['new']
+    assert type(site) == _IndexPage__PopAndNew
 
-def test_pop_site(index_page: IndexPage):
+#
+# Test _IndexPage__PopAndNew
+#
+@pytest.fixture(name='pop_and_new')
+def setup_index_with_pop_and_new_page():
+    loger.info('atart the IndexPage with pop&new page')
+    yield _IndexPage__PopAndNew(index['popular'], index['new'])
+    loger.info('teardown the IndexPage with pop&new page')
+
+def test_pop_site(index_page: _IndexPage__PopAndNew):
     with open('./tests/example/index_page.html', 'r') as html_file:
         site1 = index_page.handle_index(html_file.read()).pop_page()
         site2 = map(MetaPage, index['popular'])
-        for site in zip(site1, site2):
-            assert type(site[0]) == type(site[1])
-            assert site[0].url   == site[1].url
+    for site in zip(site1, site2):
+        assert type(site[0]) == MetaPage
+        assert type(site[1]) == MetaPage
+        assert site[0].url   == site[1].url
 
-def test_new_site(index_page: IndexPage):
+def test_new_site(index_page: _IndexPage__PopAndNew):
     with open('./tests/example/index_page.html', 'r') as html_file:
         site1 = index_page.handle_index(html_file.read()).new_page()
         site2 = map(MetaPage, index['new'])
-        for site in zip(site1, site2):
-            assert type(site[0]) == type(site[1])
-            assert site[0].url   == site[1].url
+    for site in zip(site1, site2):
+        assert type(site[0]) == MetaPage
+        assert type(site[1]) == MetaPage
+        assert site[0].url   == site[1].url
+
+#
+# Test MetaPage
+#
+@pytest.fixture(name='meta_page')
+def setup_meta_page():
+    loger.info('start the MetaPage')
+    yield MetaPage('only for test', pages=33)
+    loger.info('teardown the MetaPage')
 
 def test_handle_meta_page(meta_page: MetaPage):
     with open('./tests/example/meta_page.html', 'r') as html_file:
         site = meta_page.handle_meta_page(html_file.read())
-        assert meta_page == site
+    assert type(site)             == MetaPage
     assert meta_page.h1title      == meta['h1title']
     assert meta_page.h2title      == meta['h2title']
     assert meta_page.h1title_full == meta['h1title_full']
@@ -73,11 +83,12 @@ def test_handle_meta_page(meta_page: MetaPage):
 def test_handle_gallery_page(meta_page: MetaPage):
     with open('./tests/example/gallery_page.html', 'r') as html_file:
         site = meta_page.handle_gallery_page(html_file.read())
-        assert meta_page == site
+    assert type(site)          == MetaPage
     assert meta_page.downloads == meta['downloads']
 
 def test_get_url(meta_page: MetaPage):
     assert meta_page.get_url() == 'only for test'
+
 
 if __name__ == '__main__':
     pytest.main()
