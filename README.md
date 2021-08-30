@@ -4,3 +4,17 @@
 [![codecov](https://codecov.io/gh/Mogeko/nhentai-spider/branch/master/graph/badge.svg?token=ymMFbu7f51)](https://codecov.io/gh/Mogeko/nhentai-spider)
 
 A Python spider that crawls nHentai.
+
+## Install
+
+```
+git clone https://github.com/Mogeko/nhentai-spider.git
+cd nhentai-spider
+make init
+```
+
+## Usage
+
+```
+make run
+```

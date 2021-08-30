@@ -1,15 +1,16 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Build
+name: Run
 
 on:
   push:
-    tags:
-    - '*'
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
-  build:
+  run:
 
     runs-on: ubuntu-latest
     env:
@@ -28,8 +29,4 @@ jobs:
         pip install -e .
     - name: Build & Run
       run: |
-        make build
-    - uses: actions/upload-artifact@v2
-      with:
-        name: dist
-        path: dist/nhentai_spider-*.tar.gz
+        make run
