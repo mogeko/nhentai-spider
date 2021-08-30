@@ -4,6 +4,35 @@ import logging
 
 loger = logging.getLogger(__name__)
 
+class IndexPage:
+
+    def __init__(self, domain='nhentai.net') -> None:
+        self.__domain = domain
+
+    def set_language(self, lang: str):
+        return IndexPageLanguage(self.__domain, lang)
+
+    def get_url(self):
+        return f'https://{self.__domain}'
+
+    def get_gallery_url(self, soup: BeautifulSoup) -> list[str]:
+        galleries = soup.find_all(class_='gallery')
+        return [self.get_url() + gallery.find('a').get('href') for gallery in galleries]
+
+    def handle_index(self, html: str):
+
+        loger.info('start handle the index page.')
+        soup = BeautifulSoup(html, 'lxml').find_all(class_='index-container')
+
+        popular = self.get_gallery_url(soup[0])
+        new     = self.get_gallery_url(soup[1])
+
+        loger.debug('[index] popular: %s', popular)
+        loger.debug('[index] new: %s', new)
+
+        return IndexPagePopAndNew(popular, new)
+
+
 class MetaPage:
 
     def __init__(self, url: str, *, pages: int = 1) -> None:
@@ -89,35 +118,46 @@ class MetaPage:
             'downloads': self.downloads
         }
 
-class IndexPage:
 
-    def __init__(self, domain='nhentai.net') -> None:
-        self.index  = f'https://{domain}'
-        self.domain = domain
+class IndexPagePopAndNew(IndexPage):
 
-    def handle_index(self, html: str):
+    def __init__(self, popular: str, new: str):
+        self.__popular = popular
+        self.__new     = new
 
-        def get_gallery_url(soup: BeautifulSoup) -> str:
-            galleries = soup.find_all(class_='gallery')
-            return [self.index + gallery.find('a').get('href') for gallery in galleries]
-
-        loger.info('start handle the index page.')
-        soup = BeautifulSoup(html, 'lxml').find_all(class_='index-container')
-
-        self.popular = get_gallery_url(soup[0])
-        self.new     = get_gallery_url(soup[1])
-
-        loger.debug('[index] popular: %s', self.popular)
-        loger.debug('[index] new: %s', self.new)
-
-        return self
-    
     def pop_page(self) -> Iterable[MetaPage]:
         """return a iterable that encapsulates popular MetaPage"""
         loger.info('get comics that popular now.')
-        return map(MetaPage, self.popular)
+        return map(MetaPage, self.__popular)
 
     def new_page(self) -> Iterable[MetaPage]:
         """return a iterable that encapsulates new MetaPage"""
         loger.info('get comics that new.')
-        return map(MetaPage, self.new)
+        return map(MetaPage, self.__new)
+
+
+class IndexPageLanguage(IndexPage):
+
+    def __init__(self, domain: str, lang: str) -> None:
+        self.__domain = domain
+        self.__lang   = lang
+
+    def get_url(self, *, sort: str = 'recent'):
+        if sort == 'today':
+            sort = 'popular-today'
+        elif sort == 'week':
+            sort = 'popular-week'
+        elif sort == 'all':
+            sort = 'popular'
+        else:
+            sort = ''
+        return f'https://{self.__domain}/language/{self.__lang}/{sort}'
+
+    def handle_index(self, html: str):
+
+        loger.info('start handle the index (with language) page.')
+        sites = self.get_gallery_url(BeautifulSoup(html, 'lxml'))
+
+        loger.debug('[index] sites: %s', sites)
+
+        return map(MetaPage, sites)
