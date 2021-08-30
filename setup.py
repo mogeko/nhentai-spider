@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="nhentai_spider",
-    version="0.0.1",
+    version="0.0.2",
     author="mogeko",
     author_email="zhengjunyi@live.com",
     description="A Python spider that crawls nHentai.",

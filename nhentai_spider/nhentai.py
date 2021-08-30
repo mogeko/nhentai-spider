@@ -7,15 +7,13 @@ loger = logging.getLogger(__name__)
 class IndexPage:
 
     def __init__(self, domain='nhentai.net') -> None:
-        self.__index  = f'https://{domain}'
+        self.__domain = domain
 
     def set_language(self, lang: str):
-        self.lang = lang
-        return self #TODO
+        return _IndexPage__Language(self.__domain, lang)
 
     def get_url(self):
-        # TODO
-        return self.__index
+        return f'https://{self.__domain}'
 
     def __get_gallery_url(self, soup: BeautifulSoup) -> str:
         galleries = soup.find_all(class_='gallery')
@@ -136,3 +134,21 @@ class _IndexPage__PopAndNew(IndexPage):
         """return a iterable that encapsulates new MetaPage"""
         loger.info('get comics that new.')
         return map(MetaPage, self.__new)
+
+
+class _IndexPage__Language(IndexPage):
+
+    def __init__(self, domain: str, lang: str) -> None:
+        self.__domain = domain
+        self.__lang   = lang
+
+    def get_url(self, *, sort: str = 'recent'):
+        if sort == 'today':
+            sort = 'popular-today'
+        elif sort == 'week':
+            sort = 'popular-week'
+        elif sort == 'all':
+            sort = 'popular'
+        else:
+            sort = ''
+        return f'https://{self.__domain}/language/{self.__lang}/{sort}'
